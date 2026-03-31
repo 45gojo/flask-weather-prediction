@@ -3,8 +3,12 @@ import joblib
 import numpy as np
 
 application = Flask(__name__)
+import os
 
-model = joblib.load(r"C:\Users\anshk\Desktop\ML\projects\Wether_prediction\xg_model.joblib")
+base_dir = os.path.dirname(os.path.abspath(__file__))
+model_path = os.path.join(base_dir, 'xg_model.joblib')
+
+model = joblib.load(model_path)
 
 @application.route("/", methods=["GET", "POST"])
 def home():
