@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>🌈 Weather Predictor | Rain Forecast</title>
+    <!-- Google Fonts - Poppins for modern look -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6 (free icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            background: linear-gradient(145deg, #ff9a9e 0%, #fad0c4 35%, #fad0c4 65%, #ffd6a5 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* animated weather floating elements */
+        body::before {
+            content: "🌈";
+            font-size: 100px;
+            position: absolute;
+            top: 2%;
+            left: 2%;
+            opacity: 0.25;
+            animation: floatAround 20s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: "⛈️";
+            font-size: 90px;
+            position: absolute;
+            bottom: 5%;
+            right: 3%;
+            opacity: 0.2;
+            animation: floatAround 18s infinite reverse;
+            pointer-events: none;
+        }
+
+        @keyframes floatAround {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(30px, -25px) rotate(5deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+
+        /* main colorful container */
+        .container {
+            max-width: 1250px;
+            width: 95%;
+            margin: 0 auto;
+            background: linear-gradient(135deg, rgba(255,255,245,0.96), rgba(255,245,235,0.94));
+            backdrop-filter: blur(3px);
+            border-radius: 3rem;
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.25), 0 0 0 2px rgba(255,215,150,0.6);
+            padding: 2rem 2rem 2.5rem;
+            transition: all 0.3s;
+            animation: bounceFade 0.6s cubic-bezier(0.34, 1.2, 0.64, 1);
+        }
+
+        @keyframes bounceFade {
+            0% { opacity: 0; transform: scale(0.96) translateY(30px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        /* header with rainbow effect */
+        .header-icon {
+            text-align: center;
+            margin-bottom: 0.2rem;
+        }
+        .header-icon i {
+            font-size: 3.5rem;
+            background: linear-gradient(135deg, #FF512F, #F09819, #FFD166, #06D6A0, #118AB2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+        }
+
+        h1 {
+            text-align: center;
+            font-weight: 800;
+            font-size: 2rem;
+            background: linear-gradient(120deg, #FF4E50, #F9D423, #00B4DB, #0083B0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.3rem;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.05);
+        }
+
+        /* Removed subhead line completely */
+        .subhead {
+            display: none;
+        }
+
+        /* grid layout - keep exact sequence */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0 2rem;
+        }
+
+        /* colorful input cards */
+        label {
+            background: linear-gradient(145deg, #ffffff, #fffaf5);
+            padding: 0.9rem 1rem 1rem;
+            border-radius: 1.6rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 180, 100, 0.4);
+            box-shadow: 0 10px 20px -8px rgba(0, 0, 0, 0.1);
+            font-weight: 600;
+            color: #2d3e50;
+            font-size: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        label:hover {
+            transform: translateY(-6px) scale(1.01);
+            border-color: #ffaa55;
+            background: white;
+            box-shadow: 0 22px 30px -14px rgba(255, 100, 50, 0.3);
+        }
+
+        /* colorful icons per label category */
+        .label-icon {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+        .label-icon i {
+            font-size: 1.2rem;
+            background: linear-gradient(135deg, #FF8C00, #FF2E63);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* vibrant inputs */
+        input {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 1.4rem;
+            border: 2px solid #ffe0b5;
+            background: #fffef7;
+            font-family: 'Poppins', monospace;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            margin-top: 5px;
+            color: #1f2f3c;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #FF9F4A;
+            box-shadow: 0 0 0 4px rgba(255, 159, 74, 0.3);
+            transform: scale(1.01);
+            background: #ffffff;
+        }
+
+        /* Super colorful gradient button */
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            width: 100%;
+            margin-top: 25px;
+            padding: 16px 22px;
+            border: none;
+            background: linear-gradient(105deg, #FF4E50, #F9D423, #FF8C00);
+            background-size: 200% auto;
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 800;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: 0.4s;
+            letter-spacing: 0.8px;
+            box-shadow: 0 12px 25px rgba(255, 80, 50, 0.4);
+            text-shadow: 0 1px 1px rgba(0,0,0,0.1);
+        }
+
+        .btn i {
+            font-size: 1.4rem;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            background-position: right center;
+            transform: scale(1.02);
+            box-shadow: 0 20px 30px rgba(255, 100, 30, 0.5);
+        }
+
+        .btn:hover i {
+            transform: translateX(7px);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        /* prediction card with rainbow border and vibrant colors */
+        .prediction {
+            margin-top: 2.5rem;
+            padding: 1.2rem 1.5rem;
+            background: linear-gradient(120deg, #fff6e5, #fff0e0);
+            border-radius: 2rem;
+            text-align: center;
+            font-size: 1.7rem;
+            font-weight: 800;
+            border-left: 12px solid #FF4E50;
+            border-right: 12px solid #F9D423;
+            border-bottom: 3px solid #06D6A0;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2);
+            animation: pulseGlow 1.4s infinite alternate;
+        }
+
+        .prediction h2 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin: 0;
+            background: linear-gradient(135deg, #c0392b, #e67e22, #f1c40f);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .prediction i {
+            font-size: 2rem;
+            filter: drop-shadow(2px 2px 6px rgba(0,0,0,0.2));
+        }
+
+        @keyframes pulseGlow {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 8px 25px rgba(255, 100, 0, 0.2);
+                border-left-color: #FF4E50;
+            }
+            100% {
+                transform: scale(1.02);
+                box-shadow: 0 20px 40px rgba(255, 180, 50, 0.5);
+                border-left-color: #F9D423;
+            }
+        }
+
+        /* small extra design */
+        .weather-deco {
+            position: fixed;
+            bottom: 18px;
+            left: 18px;
+            font-size: 40px;
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 1;
+            animation: spinSlow 25s infinite linear;
+        }
+
+        @keyframes spinSlow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 1.6rem;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #d45a2b;
+            background: rgba(255,245,210,0.5);
+            display: inline-block;
+            width: auto;
+            padding: 5px 15px;
+            border-radius: 40px;
+            backdrop-filter: blur(4px);
+        }
+
+        /* responsive */
+        @media (max-width: 700px) {
+            .container {
+                padding: 1.3rem;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+            .prediction {
+                font-size: 1.2rem;
+            }
+            .btn {
+                font-size: 1rem;
+            }
+        }
+
+        /* extra fun: rainbow border for grid labels */
+        input[type="number"]::-webkit-inner-spin-button {
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-icon">
+        <i class="fas fa-cloud-sun-rain"></i>
+    </div>
+    <h1>🌦️✨ Will it Rain Tomorrow? ✨🌈</h1>
+    <!-- Subhead and extra line removed as requested -->
+
+    <!-- FORM with exact input sequence as original (no changes) -->
+    <form method="POST">
+        <div class="grid">
+            <!-- Max Temperature -->
+            <label>
+                <span class="label-icon"><i class="fas fa-temperature-high"></i> Max Temperature (°C)</span>
+                <input type="number" step="0.1" name="MaxT" value="32" required>
+            </label>
+            <!-- Min Temperature -->
+            <label>
+                <span class="label-icon"><i class="fas fa-temperature-low"></i> Min Temperature (°C)</span>
+                <input type="number" step="0.1" name="MinT" value="24" required>
+            </label>
+            <!-- Humidity 1 -->
+            <label>
+                <span class="label-icon"><i class="fas fa-tint"></i> Humidity 1 (%)</span>
+                <input type="number" step="1" name="RH1" value="85" required>
+            </label>
+            <!-- Humidity 2 -->
+            <label>
+                <span class="label-icon"><i class="fas fa-water"></i> Humidity 2 (%)</span>
+                <input type="number" step="1" name="RH2" value="88" required>
+            </label>
+            <!-- Wind -->
+            <label>
+                <span class="label-icon"><i class="fas fa-wind"></i> Wind (km/h)</span>
+                <input type="number" step="0.1" name="Wind" value="10" required>
+            </label>
+            <!-- Soil Humidity -->
+            <label>
+                <span class="label-icon"><i class="fas fa-seedling"></i> Soil Humidity (mm)</span>
+                <input type="number" step="0.1" name="SSH" value="7" required>
+            </label>
+            <!-- Evaporation -->
+            <label>
+                <span class="label-icon"><i class="fas fa-smog"></i> Evaporation (mm)</span>
+                <input type="number" step="0.1" name="Evap" value="2" required>
+            </label>
+            <!-- Radiation -->
+            <label>
+                <span class="label-icon"><i class="fas fa-sun"></i> Radiation (MJ/m²)</span>
+                <input type="number" step="0.1" name="Radiation" value="15" required>
+            </label>
+            <!-- Month -->
+            <label>
+                <span class="label-icon"><i class="fas fa-calendar-alt"></i> Month</span>
+                <input type="number" name="Month" value="7" min="1" max="12" required>
+            </label>
+            <!-- Year -->
+            <label>
+                <span class="label-icon"><i class="fas fa-calendar-week"></i> Year</span>
+                <input type="number" name="Year" value="2018" required>
+            </label>
+            <!-- Day -->
+            <label>
+                <span class="label-icon"><i class="fas fa-sun"></i> Day</span>
+                <input type="number" name="Day" value="15" min="1" max="31" required>
+            </label>
+            <!-- Rain lag 1 -->
+            <label>
+                <span class="label-icon"><i class="fas fa-cloud-rain"></i> Rain lag 1 (mm)</span>
+                <input type="number" step="0.1" name="Rain_lag1" value="20" required>
+            </label>
+            <!-- Rain lag 2 -->
+            <label>
+                <span class="label-icon"><i class="fas fa-cloud-showers-heavy"></i> Rain lag 2 (mm)</span>
+                <input type="number" step="0.1" name="Rain_lag2" value="15" required>
+            </label>
+            <!-- Rain last 3 days -->
+            <label>
+                <span class="label-icon"><i class="fas fa-cloud-rain"></i> Rain last 3 days (mm)</span>
+                <input type="number" step="0.1" name="Rain_3days" value="50" required>
+            </label>
+            <!-- Rain last 7 days -->
+            <label>
+                <span class="label-icon"><i class="fas fa-cloud-moon-rain"></i> Rain last 7 days (mm)</span>
+                <input type="number" step="0.1" name="Rain_7days" value="70" required>
+            </label>
+        </div>
+        <button type="submit" class="btn">
+            <i class="fas fa-chart-line"></i> PREDICT RAINFALL 
+            <i class="fas fa-cloud-sun"></i>
+        </button>
+    </form>
+
+    {% if prediction_text %}
+    <div class="prediction">
+        <h2>
+            <i class="fas fa-umbrella"></i>
+            {{ prediction_text }}
+            <i class="fas fa-star"></i>
+        </h2>
+    </div>
+    {% else %}
+    <!-- The extra line "✨ Enter colorful weather data..." has been removed -->
+    {% endif %}
+</div>
+<div class="weather-deco">
+    <i class="fas fa-feather-alt"></i> 🌈
+</div>
+<footer style="text-align: center; margin-top: 20px; display: flex; justify-content: center;">
+    <!-- <span>🌈 <i class="fas fa-chart-simple"></i> Dynamic colorful forecast | Real-time vibe </span> -->
+</footer>
+
+<!-- All JavaScript with interactive colorful effects (no external files) -->
+<script>
+    (function() {
+        // ========== VIBRANT INTERACTIONS ==========
+        // Keep original input order intact, just add glamorous effects
+        
+        const allInputs = document.querySelectorAll('input');
+        
+        // Add colorful focus effects, tooltips, and fun animations
+        allInputs.forEach(input => {
+            // dynamic focus with rainbow glow
+            input.addEventListener('focus', () => {
+                input.style.borderColor = '#FF9966';
+                input.style.boxShadow = '0 0 0 4px rgba(255, 159, 74, 0.5)';
+                input.style.transition = 'all 0.15s';
+                const parent = input.closest('label');
+                if (parent) {
+                    parent.style.background = 'linear-gradient(145deg, #FFF2E0, #FFEBD6)';
+                    parent.style.borderColor = '#FFB347';
+                }
+            });
+            
+            input.addEventListener('blur', () => {
+                input.style.borderColor = '#ffe0b5';
+                input.style.boxShadow = 'none';
+                const parent = input.closest('label');
+                if (parent) {
+                    parent.style.background = 'linear-gradient(145deg, #ffffff, #fffaf5)';
+                    parent.style.borderColor = 'rgba(255, 180, 100, 0.4)';
+                }
+            });
+            
+            // month/day validation with colorful hint
+            input.addEventListener('change', function() {
+                if (this.name === 'Month') {
+                    let val = parseInt(this.value);
+                    if (val < 1) this.value = 1;
+                    if (val > 12) this.value = 12;
+                    // show seasonal icon effect
+                    const monthVal = parseInt(this.value);
+                    let seasonEmoji = '';
+                    if (monthVal >= 3 && monthVal <= 5) seasonEmoji = '🌸 Spring';
+                    else if (monthVal >= 6 && monthVal <= 8) seasonEmoji = '☀️ Summer';
+                    else if (monthVal >= 9 && monthVal <= 11) seasonEmoji = '🍂 Autumn';
+                    else seasonEmoji = '❄️ Winter';
+                    this.setAttribute('placeholder', seasonEmoji);
+                    this.style.backgroundColor = '#fff5e6';
+                    setTimeout(() => { this.style.backgroundColor = ''; }, 400);
+                }
+                if (this.name === 'Day') {
+                    let d = parseInt(this.value);
+                    if (d < 1) this.value = 1;
+                    if (d > 31) this.value = 31;
+                    this.style.backgroundColor = '#ffffdd';
+                    setTimeout(() => this.style.backgroundColor = '', 300);
+                }
+                // give little wiggle on number change for fun
+                this.style.transform = 'scale(1.02)';
+                setTimeout(() => { this.style.transform = ''; }, 150);
+            });
+        });
+        
+        // Button ripple & rainbow effect
+        const btn = document.querySelector('.btn');
+        if (btn) {
+            btn.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                ripple.style.position = 'absolute';
+                ripple.style.borderRadius = '50%';
+                ripple.style.background = 'radial-gradient(circle, rgba(255,255,200,0.7) 0%, rgba(255,165,0,0.3) 80%)';
+                ripple.style.width = '20px';
+                ripple.style.height = '20px';
+                ripple.style.pointerEvents = 'none';
+                const rect = btn.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.width = ripple.style.height = `${size}px`;
+                const x = e.clientX - rect.left - size/2;
+                const y = e.clientY - rect.top - size/2;
+                ripple.style.left = `${x}px`;
+                ripple.style.top = `${y}px`;
+                ripple.style.position = 'absolute';
+                ripple.style.transition = 'transform 0.6s, opacity 0.7s';
+                ripple.style.transform = 'scale(0)';
+                ripple.style.opacity = '0.8';
+                btn.style.position = 'relative';
+                btn.style.overflow = 'hidden';
+                btn.appendChild(ripple);
+                setTimeout(() => {
+                    ripple.style.transform = 'scale(2.5)';
+                    ripple.style.opacity = '0';
+                }, 20);
+                setTimeout(() => {
+                    if (ripple && ripple.remove) ripple.remove();
+                }, 600);
+            });
+        }
+        
+        // dynamic rainbow moving effect on header icon based on mouse movement
+        const headerIconElem = document.querySelector('.header-icon i');
+        if (headerIconElem) {
+            document.body.addEventListener('mousemove', (e) => {
+                const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+                const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+                headerIconElem.style.transform = `rotate(${xAxis * 0.6}deg) translateY(${yAxis * 0.4}px)`;
+            });
+        }
+        
+        // add animated glow to prediction card if exists
+        const predBox = document.querySelector('.prediction');
+        if (predBox) {
+            predBox.addEventListener('mouseenter', () => {
+                predBox.style.transform = 'scale(1.02)';
+                predBox.style.transition = '0.2s';
+            });
+            predBox.addEventListener('mouseleave', () => {
+                predBox.style.transform = 'scale(1)';
+            });
+        }
+        
+        // Small tooltip titles for all inputs (rich information)
+        const tooltipMap = {
+            MaxT: "Max temperature affects evaporation and storm potential 🌡️",
+            MinT: "Night temperature influences humidity levels 🌙",
+            RH1: "Relative humidity at 9am 💧",
+            RH2: "Relative humidity at 3pm 💧💧",
+            Wind: "Wind speed can bring rain clouds 🌬️",
+            SSH: "Soil moisture indicates past rain 🌱",
+            Evap: "Evaporation rate affects dryness ☀️",
+            Radiation: "Solar radiation drives weather patterns ☀️⚡",
+            Month: "Seasonal rain patterns matter (1-12) 📅",
+            Year: "Historical weather trends 🗓️",
+            Day: "Day of month influences microclimate 📆",
+            Rain_lag1: "Rainfall one day ago - important predictor 🌧️",
+            Rain_lag2: "Rainfall two days ago ⛈️",
+            Rain_3days: "Total rain past 3 days 📊",
+            Rain_7days: "Total rain past 7 days - trend indicator 🌊"
+        };
+        
+        allInputs.forEach(inp => {
+            const nameAttr = inp.getAttribute('name');
+            if (nameAttr && tooltipMap[nameAttr]) {
+                inp.setAttribute('title', tooltipMap[nameAttr]);
+            }
+            // also add placeholder colors
+            inp.style.transition = 'all 0.2s';
+        });
+        
+        // Loading state with colorful text on submit (but form submits normally)
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function() {
+                const submitBtn = document.querySelector('.btn');
+                if (submitBtn) {
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> 🌈 Predicting Rainbow Rain... 🌈 <i class="fas fa-cloud-rain"></i>';
+                    submitBtn.disabled = true;
+                    setTimeout(() => {
+                        if (submitBtn.disabled) {
+                            submitBtn.innerHTML = originalText;
+                            submitBtn.disabled = false;
+                        }
+                    }, 2200);
+                }
+            });
+        }
+        
+        // initial season hint for Month input
+        const monthInput = document.querySelector('input[name="Month"]');
+        if (monthInput) {
+            const setSeason = () => {
+                let m = parseInt(monthInput.value);
+                if (!isNaN(m)) {
+                    let seasonWord = '';
+                    if (m >= 3 && m <= 5) seasonWord = '🌸 Spring Vibes';
+                    else if (m >= 6 && m <= 8) seasonWord = '☀️ Summer Heat';
+                    else if (m >= 9 && m <= 11) seasonWord = '🍂 Autumn Breeze';
+                    else seasonWord = '❄️ Winter Chill';
+                    monthInput.setAttribute('placeholder', seasonWord);
+                }
+            };
+            monthInput.addEventListener('input', setSeason);
+            setSeason();
+        }
+        
+        // additional random background sparkle: colorful console greeting
+        console.log("%c🌈 Welcome to Weather Predictor! ☀️🌧️", "color: #FF8C00; font-size: 16px; font-weight: bold;");
+        
+        // dynamic floating emoji effect for inputs when clicked (just fun)
+        const createFloatingEmoji = (x, y, emoji) => {
+            const span = document.createElement('div');
+            span.innerText = emoji;
+            span.style.position = 'fixed';
+            span.style.left = `${x}px`;
+            span.style.top = `${y}px`;
+            span.style.fontSize = '22px';
+            span.style.pointerEvents = 'none';
+            span.style.zIndex = '9999';
+            span.style.opacity = '0.9';
+            span.style.transition = 'transform 1s ease-out, opacity 1s';
+            span.style.transform = 'translateY(0px)';
+            document.body.appendChild(span);
+            setTimeout(() => {
+                span.style.transform = 'translateY(-60px)';
+                span.style.opacity = '0';
+            }, 20);
+            setTimeout(() => span.remove(), 1000);
+        };
+        
+        // add click emoji effect on inputs
+        allInputs.forEach(inp => {
+            inp.addEventListener('click', (e) => {
+                const emojis = ['☀️', '🌧️', '🌈', '⛈️', '💧', '🌪️', '☁️', '✨'];
+                const randEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+                createFloatingEmoji(e.clientX, e.clientY, randEmoji);
+            });
+        });
+    })();
+</script>
+</body>
+</html>
